@@ -6,7 +6,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
   export default function Index(){
     return(
       <View style={styles.container}>
-        <Image style={styles.image} source={require("../../../../../assets/images/logo.png")}/>
+        <Image style={styles.image} source={require("../../assets/images/logo.png")}/>
 
           <TouchableOpacity style={styles.button} onPress={() => router.push("/(tabs)/src/pages/login/")}>
             <Text style={styles.buttonText}>ENTRAR</Text>
