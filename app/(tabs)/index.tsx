@@ -1,4 +1,4 @@
-  import { useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
   const router = useRouter();
@@ -8,7 +8,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
       <View style={styles.container}>
         <Image style={styles.image} source={require("../../assets/images/logo.png")}/>
 
-          <TouchableOpacity style={styles.button} onPress={() => router.push("/(tabs)/src/pages/login/")}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push("/src/pages/home")}>
             <Text style={styles.buttonText}>ENTRAR</Text>
           </TouchableOpacity>
       </View>
