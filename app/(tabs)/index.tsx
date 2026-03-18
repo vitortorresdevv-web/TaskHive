@@ -8,7 +8,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
       <View style={styles.container}>
         <Image style={styles.image} source={require("../../assets/images/logo.png")}/>
 
-          <TouchableOpacity style={styles.button} onPress={() => router.push("/(tabs)/src/pages/login/")}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push("./src/pages/login")}>
             <Text style={styles.buttonText}>ENTRAR</Text>
           </TouchableOpacity>
       </View>
