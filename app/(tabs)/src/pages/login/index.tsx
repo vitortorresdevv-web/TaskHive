@@ -7,7 +7,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
         return(
             <View style={styles.container}>
                 <Image style={styles.image} source={require("./imagens/logo.png")}/>
-                <TouchableOpacity style={styles.button} onPress={() => router.push("")}>
+                <TouchableOpacity style={styles.button} onPress={() => router.push("./home")}>
                     <Text style={styles.buttonText}>CONFIRMAR</Text>
 
                 </TouchableOpacity>
