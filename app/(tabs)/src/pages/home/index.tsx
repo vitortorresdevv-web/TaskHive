@@ -1,12 +1,18 @@
 import { ModalForm } from '@/components/modal';
+import { ModalFormIngressar } from '@/components/modal/modalIngressar';
 import { useState } from 'react';
 import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Home(){
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisibleIngressar, setModalVisibleIngressar] = useState(false);
 
     function AbrirModal(){
         setModalVisible(true)
+    }
+
+    function AbrirModalIngressar(){
+        setModalVisibleIngressar(true)
     }
 
     return(
@@ -22,12 +28,15 @@ export default function Home(){
                     <Text style={styles.textButton}>CRIAR PROJETO</Text>
                 </TouchableOpacity>
                 
-                <TouchableOpacity style={[styles.button, styles.buttonIngressar]}>
+                <TouchableOpacity style={[styles.button, styles.buttonIngressar]} onPress={AbrirModalIngressar}>
                     <Text style={styles.textButton}>INGRESSAR</Text>
                 </TouchableOpacity>
             </View>
             <Modal visible={modalVisible} animationType= "fade" transparent={true}>
                 <ModalForm/>
+            </Modal>
+            <Modal visible={modalVisibleIngressar} transparent={true}>
+                <ModalFormIngressar/>
             </Modal>
         </View>
     )

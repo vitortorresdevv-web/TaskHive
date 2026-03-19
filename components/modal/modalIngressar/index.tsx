@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export function ModalForm(){
+export function ModalFormIngressar(){
     const router = useRouter();
     const [texto, setTexto] = useState("");
     const [senha, setSenha] = useState("");
@@ -26,15 +26,6 @@ export function ModalForm(){
                     onChangeText={setSenha} 
                     style={styles.input}
                     secureTextEntry={true}
-                />
-
-                <Text style={[styles.text, styles.textAbaixo]}>NUMERO DE PARTICIPANTES</Text>
-                
-                <TextInput 
-                    value={particip}
-                    onChangeText={setParticip}
-                    style={[styles.input, styles.inputNum]}
-                    keyboardType= 'numeric'
                 />
 
                 <TouchableOpacity style={styles.buttonContinuar}>
