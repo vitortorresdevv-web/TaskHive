@@ -1,38 +1,42 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export function ModalFormIngressar(){
+export function ModalFormIngressar({fecharModalIngressar}: {fecharModalIngressar: () => void} ){
     const router = useRouter();
     const [texto, setTexto] = useState("");
     const [senha, setSenha] = useState("");
-    const [particip,setParticip] = useState("");
 
     return(
-        <View style={styles.container}>
-            <View style={styles.conteudo}>
-                <Text style={styles.text}>NOME DO TRABALHO</Text>
-                
-                <TextInput 
-                    value={texto}
-                    onChangeText={setTexto} 
-                    style={styles.input}
-                />
+            <View style={styles.container}>
+                <View style={styles.conteudo}>
 
-                <Text style={[styles.text, styles.textAbaixo]}>SENHA</Text>
-                
-                <TextInput 
-                    value={senha}
-                    onChangeText={setSenha} 
-                    style={styles.input}
-                    secureTextEntry={true}
-                />
+                    <TouchableOpacity style={styles.buttonFecharModal} onPress={fecharModalIngressar}>
+                        <Image style={styles.image} source={require("../imagensModal/sair-da-tela-cheia.png")}/>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles.buttonContinuar}>
-                    <Text style={styles.textButtonContinuar}>CONTINUAR</Text>
-                </TouchableOpacity>
+                    <Text style={styles.text}>NOME DO TRABALHO</Text>
+                    
+                    <TextInput 
+                        value={texto}
+                        onChangeText={setTexto} 
+                        style={styles.input}
+                    />
+
+                    <Text style={[styles.text, styles.textAbaixo]}>SENHA</Text>
+                    
+                    <TextInput 
+                        value={senha}
+                        onChangeText={setSenha} 
+                        style={styles.input}
+                        secureTextEntry={true}
+                    />
+
+                    <TouchableOpacity style={styles.buttonContinuar}>
+                        <Text style={styles.textButtonContinuar}>CONTINUAR</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
     )
 }
 
@@ -94,5 +98,14 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 19.1,
         padding: 6,
-    }
+    },
+
+    buttonFecharModal: {
+        marginLeft: "80%",
+    },
+
+    image: {
+        height: 35,
+        width: 35,
+    },
 })

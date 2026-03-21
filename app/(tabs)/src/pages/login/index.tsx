@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
         alignItems : "center",
         justifyContent : "center",
         marginBottom: 20,
-        flex:1,
+        flex: 1,
     },
 
     image:{

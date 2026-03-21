@@ -33,10 +33,10 @@ export default function Home(){
                 </TouchableOpacity>
             </View>
             <Modal visible={modalVisible} animationType= "fade" transparent={true}>
-                <ModalForm/>
+                <ModalForm fecharModal={() => setModalVisible(false)}/>
             </Modal>
-            <Modal visible={modalVisibleIngressar} transparent={true}>
-                <ModalFormIngressar/>
+            <Modal visible={modalVisibleIngressar} animationType='fade' transparent={true}>
+                <ModalFormIngressar fecharModalIngressar={() => setModalVisibleIngressar(false)}/>
             </Modal>
         </View>
     )

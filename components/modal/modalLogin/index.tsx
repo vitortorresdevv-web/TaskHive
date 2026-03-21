@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -11,22 +11,22 @@ export function ModalFormLogin(){
     const [senha, setSenha] = useState("");
 
     async function cadastrar() {
-    const emailFake = cpf + "@taskhive.com";
+//    const emailFake = cpf + "@taskhive.com";
 
-    try {
-        await signInWithEmailAndPassword(auth, emailFake, senha);
+//    try {
+//        await signInWithEmailAndPassword(auth, emailFake, senha);
 
-        console.log("Entrou 🔥");
+//        console.log("Entrou 🔥");
         router.push("../../src/pages/home");
 
-    } catch (error: any) {
-        if (error.code === "auth/user-not-found") {
-            console.log("Usuário novo 👀");
+ //   } catch (error: any) {
+//        if (error.code === "auth/user-not-found") {
+//            console.log("Usuário novo 👀");
             //setModalVisibleCadastro(true); // 👈 ABRE TEU MODAL
-            } else {
-            console.log("Erro:", error);
-            }
-        }
+//            } else {
+//            console.log("Erro:", error);
+//            }
+ //       }
 }
 
     return(
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     input: {
         backgroundColor: "white",
         borderRadius: 20,
-        width: 180,
+        width: "75%",
         fontWeight: "bold",
         paddingVertical: 9,
         textAlign: "center",
