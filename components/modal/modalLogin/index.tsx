@@ -1,11 +1,33 @@
 import { useRouter } from 'expo-router';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+const auth = getAuth();
 
 export function ModalFormLogin(){
     const router = useRouter();
     const [cpf, setcpf] = useState("");
     const [senha, setSenha] = useState("");
+
+    async function cadastrar() {
+    const emailFake = cpf + "@taskhive.com";
+
+    try {
+        await signInWithEmailAndPassword(auth, emailFake, senha);
+
+        console.log("Entrou 🔥");
+        router.push("../../src/pages/home");
+
+    } catch (error: any) {
+        if (error.code === "auth/user-not-found") {
+            console.log("Usuário novo 👀");
+            //setModalVisibleCadastro(true); // 👈 ABRE TEU MODAL
+            } else {
+            console.log("Erro:", error);
+            }
+        }
+}
 
     return(
         <View style={styles.container}>
@@ -29,7 +51,7 @@ export function ModalFormLogin(){
                     secureTextEntry={true}
                 />
 
-                <TouchableOpacity style={styles.buttonContinuar}onPress={() => router.push("../../src/pages/home")}>
+                <TouchableOpacity style={styles.buttonContinuar} onPress={(cadastrar)}>
                     <Text style={styles.textButtonContinuar}>CONFIRMAR</Text>
                 </TouchableOpacity>
             </View>
