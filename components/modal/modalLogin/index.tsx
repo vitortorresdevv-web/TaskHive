@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { getAuth } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from 'react';
 import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { ModalFormCadastro } from '../modalCadastro';
@@ -15,12 +15,12 @@ export function ModalFormLogin(){
     const [senha, setSenha] = useState("");
 
     async function cadastrar() {
-//    const emailFake = cpf + "@taskhive.com";
+    const emailFake = cpf + "@taskhive.com";
 
-//    try {
-//        await signInWithEmailAndPassword(auth, emailFake, senha);
+    try {
+        await signInWithEmailAndPassword(auth, emailFake, senha);
 
-//        console.log("Entrou 🔥");
+        console.log("Entrou 🔥");
         router.push("../../src/pages/home");
 
     } catch (error: any) {
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     input: {
         backgroundColor: "white",
         borderRadius: 20,
-        width: "75%",
+        width: 180,
         fontWeight: "bold",
         paddingVertical: 9,
         textAlign: "center",
@@ -127,4 +127,5 @@ const styles = StyleSheet.create({
         fontSize: 19.1,
         padding: 6,
     },
+    //only to commit
 })
