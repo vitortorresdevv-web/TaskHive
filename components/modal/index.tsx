@@ -1,8 +1,8 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export function ModalForm(){
+export function ModalForm({fecharModal}: {fecharModal: () => void} ){
     const router = useRouter();
     const [texto, setTexto] = useState("");
     const [senha, setSenha] = useState("");
@@ -11,6 +11,11 @@ export function ModalForm(){
     return(
         <View style={styles.container}>
             <View style={styles.conteudo}>
+
+                <TouchableOpacity style={styles.buttonFecharModal} onPress={fecharModal}>
+                    <Image style={styles.image} source={require("./imagensModal/sair-da-tela-cheia.png")}/>
+                </TouchableOpacity>
+
                 <Text style={styles.text}>NOME DO TRABALHO</Text>
                 
                 <TextInput 
@@ -103,5 +108,14 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 19.1,
         padding: 6,
-    }
+    },
+    
+    buttonFecharModal: {
+        marginLeft: "80%",
+    },
+
+    image: {
+        height: 35,
+        width: 35,
+    },
 })
