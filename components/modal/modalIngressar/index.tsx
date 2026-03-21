@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
         width: "65%",
         paddingHorizontal: 10,
         paddingVertical: 9,
+        textAlign: "center",
         
     },
     

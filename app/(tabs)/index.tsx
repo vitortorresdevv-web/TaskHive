@@ -1,9 +1,10 @@
 import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-  const router = useRouter();
-
   export default function Index(){
+
+    const router = useRouter();
+
     return(
       <View style={styles.container}>
         <Image style={styles.image} source={require("../../assets/images/logo.png")}/>
@@ -27,7 +28,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
     },
 
     button:{
-      backgroundColor: "#132E48",
+      backgroundColor: "#f99d30",
       width: "40%",
       borderRadius: 8,
       height: 40,
@@ -36,7 +37,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
     },
     
     buttonText:{
-      color: "#ffffff",
+      color: "#091d34",
       fontSize: 23,
       fontWeight: "bold"
     }
