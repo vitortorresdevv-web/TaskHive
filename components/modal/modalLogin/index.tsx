@@ -1,12 +1,16 @@
 import { useRouter } from 'expo-router';
 import { getAuth } from "firebase/auth";
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ModalFormCadastro } from '../modalCadastro';
 
 const auth = getAuth();
 
 export function ModalFormLogin(){
     const router = useRouter();
+
+    const[modalVisible, setModalVisible] = useState(false);
+
     const [cpf, setcpf] = useState("");
     const [senha, setSenha] = useState("");
 
@@ -19,14 +23,14 @@ export function ModalFormLogin(){
 //        console.log("Entrou 🔥");
         router.push("../../src/pages/home");
 
- //   } catch (error: any) {
-//        if (error.code === "auth/user-not-found") {
-//            console.log("Usuário novo 👀");
-            //setModalVisibleCadastro(true); // 👈 ABRE TEU MODAL
-//            } else {
-//            console.log("Erro:", error);
-//            }
- //       }
+    } catch (error: any) {
+        if (error.code === "auth/user-not-found") {
+            console.log("Usuário novo 👀");
+            setModalVisible(true); // 👈 ABRE TEU MODAL
+            } else {
+            console.log("Erro:", error);
+            }
+        }
 }
 
     return(
@@ -50,6 +54,10 @@ export function ModalFormLogin(){
                     style={styles.input}
                     secureTextEntry={true}
                 />
+
+                <Modal visible={modalVisible} animationType="fade" transparent >
+                <ModalFormCadastro/>
+                </Modal>
 
                 <TouchableOpacity style={styles.buttonContinuar} onPress={(cadastrar)}>
                     <Text style={styles.textButtonContinuar}>CONFIRMAR</Text>
