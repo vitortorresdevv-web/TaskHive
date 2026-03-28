@@ -1,10 +1,10 @@
 import { useRouter } from 'expo-router';
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { auth, db } from '../../../app/(tabs)/src/configFireBase/firebaseConfig';
 import { ModalFormCadastro } from '../modalCadastro';
-
-const auth = getAuth();
 
 export function ModalFormLogin(){
     const router = useRouter();
@@ -15,20 +15,34 @@ export function ModalFormLogin(){
     const [senha, setSenha] = useState("");
 
     async function cadastrar() {
-    const emailFake = cpf + "@taskhive.com";
+        try{
+            const cpfLimpo = cpf.replace(/\D/g, "");
+            const emailFake = cpfLimpo + '@taskhive.com'
 
-    try {
-        await signInWithEmailAndPassword(auth, emailFake, senha);
+            // cria o nosso usuario no firebase
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                emailFake,
+                senha
+            );
 
-        console.log("Entrou 🔥");
-        router.push("../../src/pages/home");
+            const user = userCredential.user;
 
-    } catch (error: any) {
-        if (error.code === "auth/user-not-found") {
-            console.log("Usuário novo 👀");
-            setModalVisible(true); // 👈 ABRE TEU MODAL
-            } else {
-            console.log("Erro:", error);
+            setModalVisible(false);
+
+            //salva o usuario no firestore
+            await setDoc(doc(db, 'users', user.uid), {
+                cpf: cpfLimpo,
+                createAt: new Date(),
+            });
+
+            console.log('usuario cadastrado');
+            router.push('../../src/pages/home')
+        } catch(error: any){
+            if (error.code === "auth/email-already-in-use"){
+                console.log('CPF ja cadastrado!!')
+            } else{
+                console.log("erro", error)
             }
         }
 }
@@ -59,7 +73,7 @@ export function ModalFormLogin(){
                 <ModalFormCadastro/>
                 </Modal>
 
-                <TouchableOpacity style={styles.buttonContinuar} onPress={(cadastrar)}>
+                <TouchableOpacity style={styles.buttonContinuar} onPress={cadastrar}>
                     <Text style={styles.textButtonContinuar}>CONFIRMAR</Text>
                 </TouchableOpacity>
             </View>
