@@ -1,9 +1,12 @@
-import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export function ModalFormCadastro(){
-    const router = useRouter();
+    type Props = {
+  onCadastrar: (nome: string) => void;
+  onClose: () => void;
+};
+
+export function ModalFormCadastro({ onCadastrar, onClose }: Props) {
     const [nome, setNome] = useState("");
 
     return(
@@ -17,7 +20,7 @@ export function ModalFormCadastro(){
                     style={styles.input}
                 />
 
-                <TouchableOpacity style={styles.buttonConfirmar}>
+                <TouchableOpacity onPress={() => onCadastrar(nome)}>
                     <Text style={styles.textButtonContinuar}>CONFIRMAR</Text>
                 </TouchableOpacity>
             </View>
