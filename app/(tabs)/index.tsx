@@ -1,44 +1,54 @@
 import { useRouter } from "expo-router";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, StyleSheet, View } from "react-native";
 
-  export default function Index(){
+export default function SplashScreen() {
+  const router = useRouter();
+  const opacity = useRef(new Animated.Value(0)).current;
 
-    const router = useRouter();
+  useEffect(() => {
 
-    return(
-      <View style={styles.container}>
-        <Image style={styles.image} source={require("../../assets/images/logo.png")}/>
-          <TouchableOpacity style={styles.button} onPress={() => router.push("./src/pages/login")}>
-            <Text style={styles.buttonText}>ENTRAR</Text>
-          </TouchableOpacity>
-      </View>
-    )
-  }
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 1500,
+      useNativeDriver: true,
+    }).start();
 
-  const styles = StyleSheet.create({
-    container: {
-      backgroundColor: "lightblue",
-      alignItems: "center",
-      justifyContent: "center",
-      flex: 1
-    },
+    const timer = setTimeout(() => {
 
-    image: {
-      transform: [{translateY: -40}]
-    },
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start(() => {
+        router.replace("/(tabs)/src/pages/login");
+      });
+    }, 4000);
 
-    button:{
-      backgroundColor: "#f99d30",
-      width: "40%",
-      borderRadius: 8,
-      height: 40,
-      justifyContent: "center",
-      alignItems: "center"
-    },
-    
-    buttonText:{
-      color: "#091d34",
-      fontSize: 23,
-      fontWeight: "bold"
-    }
-  });
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <View style={styles.splash}>
+      <Animated.Image
+        source={require("../../assets/images/logo.png")}
+        style={[styles.logoImg, { opacity }]}
+        resizeMode="contain"
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  splash: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#7dc0d6",
+  },
+
+  logoImg: {
+    width: 400,
+    height: 400,
+  },
+});

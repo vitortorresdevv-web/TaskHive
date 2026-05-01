@@ -46,7 +46,7 @@ return(
 
     <View style={styles.header}>
       <TouchableOpacity>
-        <Image style={styles.engrenagem} source={require('./imagens/engrenagem.png')}/>
+        <Image style={styles.engrenagem} source={require('./images/engrenagem.png')}/>
       </TouchableOpacity>
     </View>
 
