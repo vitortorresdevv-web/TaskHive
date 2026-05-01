@@ -1,10 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
 
 export default function Layout() {
   return (
-    <Tabs
+    <Tabs initialRouteName="home"
       screenOptions={{
         tabBarStyle: {
           backgroundColor: '#091d34',
@@ -13,23 +12,15 @@ export default function Layout() {
         },
         tabBarActiveTintColor: '#f99d30',
         headerShown: false,
-        
+        tabBarShowLabel: false,
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ focused, color, size }) => (
-            <View
-             style={{
-              backgroundColor:"White",
-              borderRadius:25,
-              padding:10,
-             }}
-            >
-            <Ionicons name="home" size={size} color={color} />
-            </View>
+          title: 'home',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" size={size} color={'#f99d30'} />
           ),
         }}
       />
@@ -37,9 +28,19 @@ export default function Layout() {
       <Tabs.Screen
         name="add"
         options={{
-          title: 'Adicionar',
+          title: 'add',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add" size={size} color={color} />
+            <Ionicons name="add" size={size} color={'#f99d30'} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'profile',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={'#f99d30'} />
           ),
         }}
       />
