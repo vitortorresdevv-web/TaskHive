@@ -43,7 +43,6 @@ export default function Perfil(){
 return(
   <View style={styles.container}>
 
-
     <View style={styles.header}>
       <TouchableOpacity>
         <Image style={styles.engrenagem} source={require('./imagens/engrenagem.png')}/>
