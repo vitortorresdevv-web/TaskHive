@@ -10,7 +10,7 @@ export default function workSelected(){
     <View style={styles.container}>
 
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.push('/src/pages/home/Home')}>
+        <TouchableOpacity onPress={() => router.push('/src/pages/home/home')}>
           <Image style={styles.image} source={require('./imagens/seta-esquerda.png')}></Image>
         </TouchableOpacity>
 
