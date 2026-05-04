@@ -1,35 +1,60 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import { useRouter } from 'expo-router';
-import { useState } from "react";
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useRef, useState } from "react";
 
-import { useRef } from "react";
-import { Animated } from "react-native";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../configFireBase/firebaseConfig";
 
 export default function workSelected(){
 
-
   const router = useRouter();
+  const { groupId } = useLocalSearchParams(); 
+
   const [menuAberto, setMenuAberto] = useState(false);
+  const [group, setGroup] = useState<any>(null);
+
   const slideAnim = useRef(new Animated.Value(300)).current;
 
   function abrirMenu() {
-  setMenuAberto(true);
+    setMenuAberto(true);
 
-  Animated.timing(slideAnim, {
-    toValue: 0,
-    duration: 300,
-    useNativeDriver: true,
-  }).start();
-}
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }
 
   function fecharMenu() {
-  Animated.timing(slideAnim, {
-    toValue: 300,
-    duration: 300,
-    useNativeDriver: true,
-  }).start(() => setMenuAberto(false));
-}
+    Animated.timing(slideAnim, {
+      toValue: 300,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => setMenuAberto(false));
+  }
+
+  
+  useEffect(() => {
+    async function loadGroup() {
+      if (!groupId) return;
+
+      try {
+        const docRef = doc(db, "groups", String(groupId));
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setGroup(docSnap.data());
+        } else {
+          console.log("Grupo não encontrado");
+        }
+      } catch (error) {
+        console.log("Erro ao buscar grupo:", error);
+      }
+    }
+
+    loadGroup();
+  }, [groupId]);
 
   return(
     <View style={{ flex: 1 }}>
@@ -46,7 +71,10 @@ export default function workSelected(){
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.titleText}>Nome do Trabalho</Text>
+        <Text style={styles.titleText}>
+          {group?.nome || "Carregando..."}
+        </Text>
+
         <Text style={styles.text}>Progresso do Trabalho</Text>
 
         <TouchableOpacity style={styles.btn}>
@@ -90,96 +118,97 @@ export default function workSelected(){
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'flex-start',
-      alignItems: 'center',
-      backgroundColor: '#44abe8',
-    },
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: '#44abe8',
+  },
 
-    btn: {
-      backgroundColor: '#f99d30',
-      borderRadius: 20,
-      width: '90%',
-      marginTop: 50,
-      height: 60,
-      alignItems: 'center',
-      justifyContent: 'center'
-      
-    },
-    
-    buttonText:{
-      color: "#091d34",
-      fontSize: 23,
-      fontWeight: "bold"
-    },
+  btn: {
+    backgroundColor: '#f99d30',
+    borderRadius: 20,
+    width: '90%',
+    marginTop: 50,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  
+  buttonText:{
+    color: "#091d34",
+    fontSize: 23,
+    fontWeight: "bold"
+  },
 
-    titleText: {
-      fontWeight: 'bold',
-      fontSize: 23,
-      marginBottom: 60,
-    },
-    text: {
-      fontWeight: 'bold',
-      fontSize: 23,
-      marginBottom: 50,
-    },
-    
-    header: {
-      width: '100%',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: 20,
-      paddingTop: 50,
-    },
+  titleText: {
+    fontWeight: 'bold',
+    fontSize: 23,
+    marginBottom: 60,
+  },
 
-    image: {
-      width: 35,
-      height: 35,
-    },
-    overlay: {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      backgroundColor: "rgba(0,0,0,0.4)",
-    },
+  text: {
+    fontWeight: 'bold',
+    fontSize: 23,
+    marginBottom: 50,
+  },
+  
+  header: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    paddingTop: 50,
+  },
 
-    drawer: {
-      position: "absolute",
-      right: 0,
-      top: 0,
-      width: '60%',
-      height: "100%",
-      backgroundColor: "rgba(19, 46, 72, 0.75)",
-      padding: 20,
-    },
+  image: {
+    width: 35,
+    height: 35,
+  },
 
-    item: {
-      color: "#132e48",
-      fontSize: 23,
-      marginTop: 20,
-      marginBottom: 35,
-      backgroundColor: '#f99d30',
-      borderRadius: 20,
-      justifyContent: 'center',
-      padding: 20,
-      fontWeight: 'bold',
-      textAlign: 'center'
-    },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
 
-    sair: {
-      backgroundColor: '#cc0000',
-      color: 'white',
-    },
+  drawer: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    width: '60%',
+    height: "100%",
+    backgroundColor: "rgba(19, 46, 72, 0.75)",
+    padding: 20,
+  },
 
-    fechar: {
-      top: 10,
-      marginBottom: 36,
-      color: "white",
-      fontSize: 22,
-      fontWeight: 'bold',
-    },
-})
+  item: {
+    color: "#132e48",
+    fontSize: 23,
+    marginTop: 20,
+    marginBottom: 35,
+    backgroundColor: '#f99d30',
+    borderRadius: 20,
+    justifyContent: 'center',
+    padding: 20,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+
+  sair: {
+    backgroundColor: '#cc0000',
+    color: 'white',
+  },
+
+  fechar: {
+    top: 10,
+    marginBottom: 36,
+    color: "white",
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
+});
