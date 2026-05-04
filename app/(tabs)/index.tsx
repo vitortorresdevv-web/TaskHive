@@ -21,7 +21,7 @@ export default function SplashScreen() {
         duration: 1000,
         useNativeDriver: true,
       }).start(() => {
-        router.replace("/(tabs)/src/pages/workSelected");
+        router.replace("/(tabs)/src/pages/login");
       });
     }, 4000);
 
