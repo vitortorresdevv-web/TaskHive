@@ -17,6 +17,8 @@ type Group = {
   id: string;
   nome: string;
   participantes: number;
+  userId: string;
+  codigo: string;
 };
 
 export default function Index() {
@@ -49,6 +51,7 @@ export default function Index() {
           participantes: Array.isArray(data.participantes)
           ? data.participantes.length
           : 0,
+          codigo: data.codigo || "",
         });
       });
 
@@ -76,7 +79,7 @@ export default function Index() {
             onPress={() =>
               router.push({
                 pathname: "/(tabs)/src/pages/workSelected",
-                params: { groupId: item.id },
+                params: { groupId: item.id, codigo: item.codigo },
               })
             }
           >

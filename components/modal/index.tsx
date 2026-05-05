@@ -12,6 +12,10 @@ export function ModalForm({ fecharModal }: { fecharModal: () => void }) {
   const [senha, setSenha] = useState("");
   const [particip, setParticip] = useState("");
 
+  function gerarCodigo() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
   async function handleCreateGroup() {
     if (!texto || !senha || !particip) return;
 
@@ -26,12 +30,15 @@ export function ModalForm({ fecharModal }: { fecharModal: () => void }) {
 
       console.log("USER:", user);
 
+      const codigo = gerarCodigo();
+
       await addDoc(collection(db, "groups"), {
         nome: texto,
         senha: senha,
         numParticipantes: particip,
         participantes: [user.uid],
         creatorId: user.uid,
+        codigo: codigo,
         createdAt: new Date(),
       });
 

@@ -1,11 +1,58 @@
 import { useRouter } from 'expo-router';
+import { getAuth } from 'firebase/auth';
+import { arrayUnion } from 'firebase/firestore';
 import { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
+
+import { db } from "../../../app/(tabs)/src/configFireBase/firebaseConfig";
+
+
 export function ModalFormIngressar({fecharModalIngressar}: {fecharModalIngressar: () => void} ){
     const router = useRouter();
-    const [texto, setTexto] = useState("");
+    const [codigo, setCodigo] = useState("");
     const [senha, setSenha] = useState("");
+
+    async function ingressar(){
+        if (!codigo || !senha) return;
+
+        try{
+            const auth = getAuth();
+            const user = auth.currentUser;
+            
+            if(!user) return;
+
+            const q = query(
+                collection(db, 'groups'), where('codigo', '==', codigo)
+            );
+
+            const snapshot = await getDocs(q);
+
+            if(snapshot.empty){
+                alert('Codigo inválido!');
+                return;
+            }
+
+            const grupoDoc = snapshot.docs[0];
+            const grupoData = grupoDoc.data();
+
+            if(grupoData.senha !== senha){
+                alert('Senha incorreta!');
+                return;
+            }
+
+            await updateDoc(doc(db, 'groups', grupoDoc.id), {
+                participantes: arrayUnion(user.uid)
+            });
+
+            alert('Você se juntou ao grupo 🔥')
+
+            fecharModalIngressar();
+        } catch (error) {
+            console.log(error);
+        }
+}
 
     return(
             <View style={styles.container}>
@@ -15,11 +62,11 @@ export function ModalFormIngressar({fecharModalIngressar}: {fecharModalIngressar
                         <Image style={styles.image} source={require("../imagensModal/sair-da-tela-cheia.png")}/>
                     </TouchableOpacity>
 
-                    <Text style={styles.text}>NOME DO TRABALHO</Text>
+                    <Text style={styles.text}>CÓDIGO DE ACESSO</Text>
                     
                     <TextInput 
-                        value={texto}
-                        onChangeText={setTexto} 
+                        value={codigo}
+                        onChangeText={setCodigo} 
                         style={styles.input}
                     />
 

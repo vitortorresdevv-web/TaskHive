@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../configFireBase/firebaseConfig";
 
+import * as Clipboard from "expo-clipboard";
+
 export default function workSelected(){
 
   const router = useRouter();
@@ -15,6 +17,7 @@ export default function workSelected(){
   const [group, setGroup] = useState<any>(null);
 
   const slideAnim = useRef(new Animated.Value(300)).current;
+  const{ codigo } = useLocalSearchParams();
 
   function abrirMenu() {
     setMenuAberto(true);
@@ -32,6 +35,11 @@ export default function workSelected(){
       duration: 300,
       useNativeDriver: true,
     }).start(() => setMenuAberto(false));
+  }
+
+  async function copiaCodigo(){
+    await Clipboard.setStringAsync(codigo as string);
+    alert('codigo de acesso copiado');
   }
 
   
@@ -102,7 +110,7 @@ export default function workSelected(){
 
             <TouchableOpacity><Text style={styles.item}>Chat</Text></TouchableOpacity>
             <TouchableOpacity><Text style={styles.item}>Integrantes</Text></TouchableOpacity>
-            <TouchableOpacity><Text style={styles.item}>Código Acesso</Text></TouchableOpacity>
+            <TouchableOpacity onPress={copiaCodigo}><Text style={styles.item}>Código Acesso</Text></TouchableOpacity>
             <TouchableOpacity><Text style={styles.item}>Convidar</Text></TouchableOpacity>
             <TouchableOpacity>
               <Text style={[styles.item, styles.sair]}>
