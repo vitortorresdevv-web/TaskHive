@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   taskbutton: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f99d30",
+    backgroundColor: '#00bf63',
     width: 160,
     height: 80,
     borderRadius: 20,
