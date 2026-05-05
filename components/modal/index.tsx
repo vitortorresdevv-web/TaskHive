@@ -29,8 +29,9 @@ export function ModalForm({ fecharModal }: { fecharModal: () => void }) {
       await addDoc(collection(db, "groups"), {
         nome: texto,
         senha: senha,
-        participantes: particip,
-        userId: user.uid,
+        numParticipantes: particip,
+        participantes: [user.uid],
+        creatorId: user.uid,
         createdAt: new Date(),
       });
 
