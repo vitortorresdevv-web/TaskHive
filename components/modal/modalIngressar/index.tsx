@@ -79,7 +79,7 @@ export function ModalFormIngressar({fecharModalIngressar}: {fecharModalIngressar
                         secureTextEntry={true}
                     />
 
-                    <TouchableOpacity style={styles.buttonContinuar}>
+                    <TouchableOpacity style={styles.buttonContinuar} onPress={ingressar}>
                         <Text style={styles.textButtonContinuar}>CONTINUAR</Text>
                     </TouchableOpacity>
                 </View>
