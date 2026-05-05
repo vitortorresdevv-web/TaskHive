@@ -66,11 +66,6 @@ export default function Tasks() {
 
   return (
     <View style={styles.container}>
-
-      <TouchableOpacity style={styles.taskbutton}>
-        <Text style={styles.taskText}>Designar</Text>
-      </TouchableOpacity>
-
       <FlatList
         data={users}
         keyExtractor={(item) => item.id}
@@ -85,6 +80,9 @@ export default function Tasks() {
           </TouchableOpacity>
         )}
       />
+        <TouchableOpacity style={styles.taskbutton}>
+            <Text style={styles.taskText}>Designar</Text>
+        </TouchableOpacity>
 
     </View>
   );
