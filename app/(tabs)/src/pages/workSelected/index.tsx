@@ -85,13 +85,15 @@ export default function workSelected(){
 
         <Text style={styles.text}>Progresso do Trabalho</Text>
 
-        <TouchableOpacity style={styles.btn}>
+        <TouchableOpacity style={styles.btn} onPress={() => router.push({
+          pathname: "./tasks",
+          params: { groupId },
+        })}>
           <Text style={styles.buttonText}>Tarefas</Text>
         </TouchableOpacity>
 
       </View>
 
-      {/* DRAWER */}
       {menuAberto && (
         <View style={styles.overlay}>
           

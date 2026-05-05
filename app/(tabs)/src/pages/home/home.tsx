@@ -16,7 +16,7 @@ import { db } from '../../configFireBase/firebaseConfig';
 type Group = {
   id: string;
   nome: string;
-  participantes: string;
+  participantes: number;
   userId: string;
   codigo: string;
 };
@@ -35,7 +35,7 @@ export default function Index() {
 
       const q = query(
         collection(db, "groups"),
-        where("userId", "==", user.uid)
+        where("participantes", "array-contains", user.uid)
       );
 
       const querySnapshot = await getDocs(q);
@@ -48,8 +48,9 @@ export default function Index() {
         list.push({
           id: doc.id,
           nome: data.nome || "Sem nome",
-          participantes: data.participantes || "0",
-          userId: data.userId || "",
+          participantes: Array.isArray(data.participantes)
+          ? data.participantes.length
+          : 0,
           codigo: data.codigo || "",
         });
       });
