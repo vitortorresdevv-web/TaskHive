@@ -52,6 +52,7 @@ export default function Index() {
           ? data.participantes.length
           : 0,
           codigo: data.codigo || "",
+          userId: data.userId || "",
         });
       });
 
