@@ -4,12 +4,12 @@ import { getAuth } from 'firebase/auth';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useCallback, useState } from 'react';
 import {
-    FlatList,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { db } from '../../configFireBase/firebaseConfig';
 
@@ -18,6 +18,7 @@ type Group = {
   nome: string;
   participantes: string;
   userId: string;
+  codigo: string;
 };
 
 export default function Index() {
@@ -49,6 +50,7 @@ export default function Index() {
           nome: data.nome || "Sem nome",
           participantes: data.participantes || "0",
           userId: data.userId || "",
+          codigo: data.codigo || "",
         });
       });
 
@@ -76,7 +78,7 @@ export default function Index() {
             onPress={() =>
               router.push({
                 pathname: "/(tabs)/src/pages/workSelected",
-                params: { groupId: item.id },
+                params: { groupId: item.id, codigo: item.codigo },
               })
             }
           >
