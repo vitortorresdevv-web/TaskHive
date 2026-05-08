@@ -3,12 +3,26 @@ import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from "react
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from "react";
 
-import { doc, getDoc } from "firebase/firestore";
+import { ModalLider } from "@/components/modal/modalEscolherNivel3";
+
+
+import { arrayRemove, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../configFireBase/firebaseConfig";
 
+import { collection, getDocs, query, where } from "firebase/firestore";
+
 import * as Clipboard from "expo-clipboard";
+import { getAuth } from "firebase/auth";
 
 export default function workSelected(){
+
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisibleLider, setModalVisibleLider] = useState(false);
+
+    function abrirModalLider(){
+      loadParticipants();
+      setModalLider(true);
+    }
 
   const router = useRouter();
   const { groupId } = useLocalSearchParams(); 
@@ -35,6 +49,77 @@ export default function workSelected(){
       duration: 300,
       useNativeDriver: true,
     }).start(() => setMenuAberto(false));
+  }
+
+  const [modalLider, setModalLider] = useState(false);
+  const [users, setUsers] = useState<any[]>([]);
+  const [novoLider, setNovoLider] = useState<string | null>(null);
+
+  async function loadParticipants() {
+  try {
+    if (!groupId) return;
+
+    const groupRef = doc(db, "groups", String(groupId));
+    const groupSnap = await getDoc(groupRef);
+
+    if (!groupSnap.exists()) return;
+
+    const participantes = groupSnap.data().participantes || [];
+
+    if (participantes.length === 0) return;
+
+    const q = query(
+      collection(db, "users"),
+      where("__name__", "in", participantes)
+    );
+
+    const snapshot = await getDocs(q);
+
+    const list: any[] = [];
+
+    snapshot.forEach((doc) => {
+      list.push({
+        id: doc.id,
+        nome: doc.data().nome,
+      });
+    });
+
+    setUsers(list);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+  function abrirModalSair() {
+    loadParticipants();
+    setModalLider(true);
+  }
+
+  function selecionarLider(userId: string) {
+    setNovoLider(userId);
+  }
+
+  async function confirmarSaida() {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (!user || !groupId || !novoLider) return;
+
+      const groupRef = doc(db, "groups", String(groupId));
+
+      // troca líder + remove usuário
+      await updateDoc(groupRef, {
+        creatorId: novoLider,
+        participantes: arrayRemove(user.uid),
+      });
+
+      setModalLider(false);
+      router.push("/src/pages/home/home");
+
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async function copiaCodigo(){
@@ -112,13 +197,18 @@ export default function workSelected(){
             <TouchableOpacity><Text style={styles.item}>Integrantes</Text></TouchableOpacity>
             <TouchableOpacity onPress={copiaCodigo}><Text style={styles.item}>Código Acesso</Text></TouchableOpacity>
             <TouchableOpacity><Text style={styles.item}>Convidar</Text></TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={[styles.item, styles.sair]}>
-                Sair do trabalho
-              </Text>
-            </TouchableOpacity>
+            <TouchableOpacity onPress={abrirModalLider}><Text style={[styles.item, styles.sair]}>Sair do trabalho</Text></TouchableOpacity>
 
           </Animated.View>
+
+          <ModalLider
+            visible={modalLider}
+            users={users}
+            novoLider={novoLider}
+            onSelect={selecionarLider}
+            onConfirm={confirmarSaida}
+            onClose={() => setModalLider(false)}
+          />
 
         </View>
       )}
