@@ -1,16 +1,13 @@
-import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
+
 import { getAuth } from 'firebase/auth';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { useCallback, useState } from 'react';
-import {
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+
+import { useEffect, useState } from 'react';
+
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import { db } from '../../configFireBase/firebaseConfig';
 
 type Group = {
@@ -19,92 +16,193 @@ type Group = {
   participantes: number;
   userId: string;
   codigo: string;
+  status?: "pendente" | "concluído";
 };
 
 export default function Index() {
+
+  const [openFilter, setOpenFilter] = useState(false);
+
   const router = useRouter();
 
   const [groups, setGroups] = useState<Group[]>([]);
 
-  async function loadGroups() {
-    try {
-      const auth = getAuth();
-      const user = auth.currentUser;
+  const [filter, setFilter] = useState("todos");
 
-      if (!user) return;
+  useEffect(() => {
 
-      const q = query(
-        collection(db, "groups"),
-        where("participantes", "array-contains", user.uid)
-      );
+    const auth = getAuth();
 
-      const querySnapshot = await getDocs(q);
+    const user = auth.currentUser;
+
+    if (!user) return;
+
+    const q = query(
+      collection(db, "groups"),
+      where("participantes", "array-contains", user.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
 
       const list: Group[] = [];
 
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
+      snapshot.forEach((docItem) => {
+
+        const data = docItem.data();
 
         list.push({
-          id: doc.id,
+          id: docItem.id,
           nome: data.nome || "Sem nome",
-          participantes: Array.isArray(data.participantes)
-          ? data.participantes.length
-          : 0,
+
+          participantes:
+            Array.isArray(data.participantes)
+              ? data.participantes.length
+              : 0,
+
           codigo: data.codigo || "",
+
           userId: data.userId || "",
+
+          status: "pendente",
         });
       });
 
       setGroups(list);
 
-    } catch (error) {
-      console.log("Erro ao carregar grupos:", error);
-    }
+    });
+
+    return () => unsubscribe();
+
+  }, []);
+
+  const filteredGroups = groups.filter((group) => {
+
+  if (filter === "todos") {
+    return true;
   }
 
-  useFocusEffect(
-    useCallback(() => {
-      loadGroups();
-    }, [])
-  );
+  if (filter === "pendentes") {
+    return group.status === "pendente";
+  }
+
+  if (filter === "concluidos") {
+    return group.status === "concluído";
+  }
+
+  return true;
+});
 
   return (
     <View style={styles.container}>
+
+    <View style={styles.filterWrapper}>
+
+      <TouchableOpacity
+        style={styles.mainFilterButton}
+        onPress={() => setOpenFilter(!openFilter)}
+      >
+        <Image
+          source={require("./images/filter.png")}
+          style={{ width: 35, height: 35}}
+        />
+    </TouchableOpacity>
+
+  {openFilter && (
+
+    <View style={styles.dropdown}>
+
+      <TouchableOpacity
+        style={styles.filterOption}
+        onPress={() => {
+          setFilter("todos");
+          setOpenFilter(false);
+        }}
+      >
+        <Text style={styles.optionText}>
+          Todos
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.filterOption}
+        onPress={() => {
+          setFilter("pendentes");
+          setOpenFilter(false);
+        }}
+      >
+        <Text style={styles.optionText}>
+          Pendentes
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.filterOption}
+        onPress={() => {
+          setFilter("concluidos");
+          setOpenFilter(false);
+        }}
+      >
+        <Text style={styles.optionText}>
+          Concluídos
+        </Text>
+      </TouchableOpacity>
+
+    </View>
+
+  )}
+
+</View>
+
       <FlatList
-        data={groups}
+        data={filteredGroups}
         keyExtractor={(item) => item.id}
 
         renderItem={({ item }) => (
+
           <TouchableOpacity
             onPress={() =>
               router.push({
                 pathname: "/(tabs)/src/pages/workSelected",
-                params: { groupId: item.id, codigo: item.codigo },
+                params: {
+                  groupId: item.id,
+                  codigo: item.codigo,
+                },
               })
             }
           >
+
             <View style={styles.card}>
-              <Text style={styles.cardTitle}>{item.nome}</Text>
+
+              <Text style={styles.cardTitle}>
+                {item.nome}
+              </Text>
+
               <Text style={styles.cardText}>
                 Participantes: {item.participantes}
               </Text>
+
             </View>
+
           </TouchableOpacity>
         )}
 
         ListEmptyComponent={() => (
+
           <View style={styles.emptyContainer}>
+
             <Image
               style={styles.image}
               source={require("../home/images/Lupa-image.png")}
             />
+
             <Text style={styles.text}>
               Você ainda não participa de nenhum projeto
             </Text>
+
           </View>
         )}
       />
+
     </View>
   );
 }
@@ -150,4 +248,41 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: "#333",
   },
+
+filterWrapper: {
+  alignItems: "flex-end",
+  marginTop: 20,
+  marginRight: 20,
+},
+
+mainFilterButton: {
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 15,
+},
+
+mainFilterText: {
+  color: "white",
+  fontWeight: "bold",
+},
+
+dropdown: {
+  marginTop: 10,
+  backgroundColor: "#091d34",
+  borderRadius: 15,
+  overflow: "hidden",
+},
+
+filterOption: {
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  borderBottomWidth: 1,
+  borderBottomColor: "#44abe8",
+},
+
+optionText: {
+  color: "white",
+  fontWeight: "bold",
+},
+
 });

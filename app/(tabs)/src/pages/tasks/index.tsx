@@ -1,13 +1,15 @@
 import TaskModal from "@/components/modal/taskModal";
 import UserTasksModal from "@/components/modal/userTaskModal";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { getAuth } from "firebase/auth";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { db } from "../../configFireBase/firebaseConfig";
 
 export default function Tasks() {
+
+  const router = useRouter();
 
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [tasksModalVisible, setTasksModalVisible] = useState(false);
@@ -79,6 +81,21 @@ export default function Tasks() {
 
   return (
     <View style={styles.container}>
+
+      <View style={styles.header}>
+
+  <TouchableOpacity
+    onPress={() => router.back()}
+  >
+
+    <Image
+      style={styles.image}
+      source={require("../workSelected/imagens/seta-esquerda.png")}
+    />
+
+  </TouchableOpacity>
+
+  </View>
 
       <FlatList
         data={users}
@@ -174,4 +191,15 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: "#333",
   },
+  
+  header: {
+  width: "100%",
+  paddingTop: 50,
+  paddingLeft: 20,
+},
+
+image: {
+  width: 35,
+  height: 35,
+},
 });

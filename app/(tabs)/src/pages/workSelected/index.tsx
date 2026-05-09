@@ -108,7 +108,6 @@ export default function workSelected(){
 
       const groupRef = doc(db, "groups", String(groupId));
 
-      // troca líder + remove usuário
       await updateDoc(groupRef, {
         creatorId: novoLider,
         participantes: arrayRemove(user.uid),
