@@ -1,22 +1,22 @@
 import { getAuth } from "firebase/auth";
 import {
-    collection,
-    doc,
-    getDocs,
-    query,
-    updateDoc,
-    where,
+  collection,
+  doc,
+  onSnapshot,
+  query,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 
 import { useEffect, useState } from "react";
 
 import {
-    FlatList,
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import { db } from "../../../app/(tabs)/src/configFireBase/firebaseConfig";
@@ -43,42 +43,35 @@ export default function UserTasksModal({
 
   useEffect(() => {
 
-    async function loadTasks() {
+  if (!selectedUser) return;
 
-      try {
+  const q = query(
+    collection(db, "tasks"),
+    where("userId", "==", selectedUser.id),
+    where("groupId", "==", groupId)
+  );
 
-        if (!selectedUser) return;
+  const unsubscribe = onSnapshot(q, (snapshot) => {
 
-        const q = query(
-          collection(db, "tasks"),
-          where("userId", "==", selectedUser.id),
-          where("groupId", "==", groupId)
-        );
+    const list: any[] = [];
 
-        const snapshot = await getDocs(q);
+    snapshot.forEach((docItem) => {
 
-        const list: any[] = [];
+      const data = docItem.data();
 
-        snapshot.forEach((docItem) => {
+      list.push({
+        id: docItem.id,
+        ...data,
+      });
+    });
 
-          const data = docItem.data();
+    setTasks(list);
 
-          list.push({
-            id: docItem.id,
-            ...data,
-          });
-        });
+  });
 
-        setTasks(list);
+  return () => unsubscribe();
 
-      } catch (error) {
-        console.log("Erro ao carregar tasks:", error);
-      }
-    }
-
-    loadTasks();
-
-  }, [selectedUser]);
+}, [selectedUser]);
 
   async function toggleTask(task: any) {
 
@@ -93,14 +86,6 @@ export default function UserTasksModal({
       await updateDoc(taskRef, {
         completed: !task.completed,
       });
-
-      setTasks((oldTasks) =>
-        oldTasks.map((item) =>
-          item.id === task.id
-            ? { ...item, completed: !item.completed }
-            : item
-        )
-      );
 
     } catch (error) {
       console.log(error);
