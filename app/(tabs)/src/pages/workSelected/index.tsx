@@ -1,27 +1,69 @@
-import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from "react";
-
+import { ModalConfirmarSaida } from "@/components/modal/modalConfirmarSaida";
 import { ModalLider } from "@/components/modal/modalEscolherNivel3";
-
-
-import { arrayRemove, doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../configFireBase/firebaseConfig";
-
-import { collection, getDocs, query, where } from "firebase/firestore";
-
 import * as Clipboard from "expo-clipboard";
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { getAuth } from "firebase/auth";
+import { arrayRemove, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { db } from "../../configFireBase/firebaseConfig";
 
 export default function workSelected(){
 
     const [modalVisible, setModalVisible] = useState(false);
     const [modalVisibleLider, setModalVisibleLider] = useState(false);
 
-    function abrirModalLider(){
-      loadParticipants();
-      setModalLider(true);
+    const [modalConfirmarSaida, setModalConfirmarSaida] = useState(false);
+
+    async function sairDoTrabalho() {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (!user || !groupId) return;
+
+        const groupRef = doc(db, "groups", String(groupId));
+        const groupSnap = await getDoc(groupRef);
+
+        if (!groupSnap.exists()) return;
+
+        const data = groupSnap.data();
+
+        if (data.creatorId === user.uid) {
+
+          await loadParticipants();
+          setModalLider(true);
+
+        } 
+        else {
+
+          setModalConfirmarSaida(true);
+
+        }
+
+      } catch (error) {
+        console.log("Erro ao verificar creatorId:", error);
+      }
+    }
+
+    async function confirmarSaidaUsuario() {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (!user || !groupId) return;
+
+        await updateDoc(doc(db, "groups", String(groupId)), {
+          participantes: arrayRemove(user.uid),
+        });
+
+        setModalConfirmarSaida(false);
+
+        router.push("/src/pages/home/home");
+
+      } catch (error) {
+        console.log("Erro ao sair do trabalho:", error);
+      }
     }
 
   const router = useRouter();
@@ -78,10 +120,15 @@ export default function workSelected(){
     const list: any[] = [];
 
     snapshot.forEach((doc) => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (doc.id !== user?.uid) {
       list.push({
         id: doc.id,
         nome: doc.data().nome,
       });
+    }
     });
 
     setUsers(list);
@@ -196,7 +243,7 @@ export default function workSelected(){
             <TouchableOpacity><Text style={styles.item}>Integrantes</Text></TouchableOpacity>
             <TouchableOpacity onPress={copiaCodigo}><Text style={styles.item}>Código Acesso</Text></TouchableOpacity>
             <TouchableOpacity><Text style={styles.item}>Convidar</Text></TouchableOpacity>
-            <TouchableOpacity onPress={abrirModalLider}><Text style={[styles.item, styles.sair]}>Sair do trabalho</Text></TouchableOpacity>
+            <TouchableOpacity onPress={sairDoTrabalho}><Text style={[styles.item, styles.sair]}>Sair do trabalho</Text></TouchableOpacity>
 
           </Animated.View>
 
@@ -207,6 +254,12 @@ export default function workSelected(){
             onSelect={selecionarLider}
             onConfirm={confirmarSaida}
             onClose={() => setModalLider(false)}
+          />
+
+          <ModalConfirmarSaida
+            visible={modalConfirmarSaida}
+            onConfirm={confirmarSaidaUsuario}
+            onClose={() => setModalConfirmarSaida(false)}
           />
 
         </View>
