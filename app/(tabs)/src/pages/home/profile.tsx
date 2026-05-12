@@ -1,9 +1,10 @@
 import { ModalEstatiscaPerfil } from "@/components/modal/modalPerfil";
 import * as ImagePicker from "expo-image-picker";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { auth, db } from "../../configFireBase/firebaseConfig";
+import { auth, db, storage } from "../../configFireBase/firebaseConfig";
 
 export default function Perfil(){
     const [dados, setDados] = useState<any>(null);
@@ -22,23 +23,59 @@ export default function Perfil(){
             const docSnap = await getDoc(docRef)
 
             if (docSnap.exists()){
-                setDados(docSnap.data());
-            } else {
-                console.log('Usuário não encontrado');
+                const data = docSnap.data();
+
+                setDados(data);
+
+                if (data.fotoPerfil) {
+                    setFoto(data.fotoPerfil);
+                }            
             }
         }
 
         buscarDados();
     }, []);
 
-        async function selecionarImage(){
-            const result = await ImagePicker.launchImageLibraryAsync({mediaTypes: ImagePicker.MediaTypeOptions.Images, 
-            quality: 1,});
+async function selecionarImage() {
 
-            if (!result.canceled){
-                setFoto(result.assets[0].uri);
-            }
-        }
+    const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+    });
+
+    if (result.canceled) return;
+
+    try {
+
+        const user = auth.currentUser;
+
+        if (!user) return;
+
+        const imageUri = result.assets[0].uri;
+
+        setFoto(imageUri);
+
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+
+        const storageRef = ref(storage, `perfil/${user.uid}.jpg`);
+
+        await uploadBytes(storageRef, blob);
+
+        const downloadURL = await getDownloadURL(storageRef);
+
+        await updateDoc(doc(db, "users", user.uid), {
+            fotoPerfil: downloadURL,
+        });
+
+        setFoto(downloadURL);
+
+        alert("Foto atualizada!");
+
+    } catch (error) {
+        console.log("Erro ao enviar imagem:", error);
+    }
+}
     
 return(
   <View style={styles.container}>
