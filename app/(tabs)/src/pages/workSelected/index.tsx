@@ -96,6 +96,7 @@ export default function workSelected(){
   const [modalLider, setModalLider] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
   const [novoLider, setNovoLider] = useState<string | null>(null);
+  const [nivelPermissao, setNivelPermissao] = useState(0);
 
   async function loadParticipants() {
   try {
@@ -175,24 +176,47 @@ export default function workSelected(){
 
   
   useEffect(() => {
+
     async function loadGroup() {
+
       if (!groupId) return;
 
       try {
+
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (!user) return;
+
         const docRef = doc(db, "groups", String(groupId));
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setGroup(docSnap.data());
+
+          const data = docSnap.data();
+
+          setGroup(data);
+
+          const permissoes = data.permissoes || {};
+
+          setNivelPermissao(permissoes[user.uid] || 0);
+
         } else {
+
           console.log("Grupo não encontrado");
+
         }
+
       } catch (error) {
+
         console.log("Erro ao buscar grupo:", error);
+
       }
+
     }
 
     loadGroup();
+
   }, [groupId]);
 
   return(
@@ -216,12 +240,12 @@ export default function workSelected(){
 
         <Text style={styles.text}>Progresso do Trabalho</Text>
 
-        <TouchableOpacity style={styles.btn} onPress={() => router.push({
-          pathname: "./tasks",
-          params: { groupId },
-        })}>
-          <Text style={styles.buttonText}>Tarefas</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.btn} onPress={() => router.push({
+            pathname: "./tasks",
+            params: { groupId },
+          })}>
+            <Text style={styles.buttonText}>Tarefas</Text>
+          </TouchableOpacity>
 
       </View>
 
@@ -239,9 +263,13 @@ export default function workSelected(){
               <Text style={styles.fechar}>✖</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity><Text style={styles.item}>Chat</Text></TouchableOpacity>
-            <TouchableOpacity><Text style={styles.item}>Integrantes</Text></TouchableOpacity>
-            <TouchableOpacity onPress={copiaCodigo}><Text style={styles.item}>Código Acesso</Text></TouchableOpacity>
+            {nivelPermissao >= 1 &&(
+              <TouchableOpacity><Text style={styles.item}>Chat</Text></TouchableOpacity>
+            )}
+            <TouchableOpacity onPress={() => router.push({ pathname: '/(tabs)/src/pages/integrantes',params: { groupId },})}><Text style={styles.item}>Integrantes</Text></TouchableOpacity>
+            {nivelPermissao >=2 &&(
+              <TouchableOpacity onPress={copiaCodigo}><Text style={styles.item}>Código Acesso</Text></TouchableOpacity>
+            )}
             <TouchableOpacity><Text style={styles.item}>Convidar</Text></TouchableOpacity>
             <TouchableOpacity onPress={sairDoTrabalho}><Text style={[styles.item, styles.sair]}>Sair do trabalho</Text></TouchableOpacity>
 

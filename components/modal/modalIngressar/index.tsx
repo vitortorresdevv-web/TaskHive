@@ -43,7 +43,8 @@ export function ModalFormIngressar({fecharModalIngressar}: {fecharModalIngressar
             }
 
             await updateDoc(doc(db, 'groups', grupoDoc.id), {
-                participantes: arrayUnion(user.uid)
+                participantes: arrayUnion(user.uid),
+                [`permissoes.${user.uid}`]: 1
             });
 
             alert('Você se juntou ao grupo 🔥')

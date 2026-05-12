@@ -39,6 +39,9 @@ export function ModalForm({ fecharModal }: { fecharModal: () => void }) {
         participantes: [user.uid],
         creatorId: user.uid,
         codigo: codigo,
+        permissoes: {
+          [user.uid]: 3
+        },
         createdAt: new Date(),
       });
 
