@@ -6,9 +6,12 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 
 import { useEffect, useState } from 'react';
 
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { db } from '../../configFireBase/firebaseConfig';
+
+import InvitesModal from '@/components/modal/modalInvites';
+
 
 type Group = {
   id: string;
@@ -20,6 +23,8 @@ type Group = {
 };
 
 export default function Index() {
+
+  const [inviteModalVisible, setInviteModalVisible] = useState(false);
 
   const [openFilter, setOpenFilter] = useState(false);
 
@@ -95,17 +100,36 @@ export default function Index() {
   return (
     <View style={styles.container}>
 
+        <Modal visible={inviteModalVisible} animationType="fade" transparent={true}>
+          <InvitesModal
+            visible={inviteModalVisible}
+            onClose={() => setInviteModalVisible(false)}
+            
+          />
+        </Modal>
+
     <View style={styles.filterWrapper}>
 
-      <TouchableOpacity
-        style={styles.mainFilterButton}
-        onPress={() => setOpenFilter(!openFilter)}
-      >
-        <Image
-          source={require("./images/filter.png")}
-          style={{ width: 35, height: 35}}
-        />
-    </TouchableOpacity>
+      <View style={styles.buttons}>
+
+        <TouchableOpacity style={styles.inboxButton} onPress={() => setInviteModalVisible(true)}>
+          <Image
+            source={require("./images/messages.png")}
+            style={styles.inboxImage}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.mainFilterButton}
+          onPress={() => setOpenFilter(!openFilter)}
+        >
+          <Image
+            source={require("./images/filter.png")}
+            style={{ width: 35, height: 35}}
+          />
+      </TouchableOpacity>
+
+      </View>
 
   {openFilter && (
 
@@ -250,7 +274,6 @@ const styles = StyleSheet.create({
   },
 
 filterWrapper: {
-  alignItems: "flex-end",
   marginTop: 20,
   marginRight: 20,
 },
@@ -271,6 +294,7 @@ dropdown: {
   backgroundColor: "#091d34",
   borderRadius: 15,
   overflow: "hidden",
+  alignSelf: "flex-end",
 },
 
 filterOption: {
@@ -283,6 +307,22 @@ filterOption: {
 optionText: {
   color: "white",
   fontWeight: "bold",
+},
+
+inboxButton: {
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+},
+
+inboxImage: {
+  width: 35,
+  height: 35,
+},
+
+buttons: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "flex-end",
 },
 
 });

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
     type Props = {
   onCadastrar: (nome: string) => void;
@@ -11,7 +11,17 @@ export function ModalFormCadastro({ onCadastrar, onClose }: Props) {
 
     return(
         <View style={styles.container}>
+            
             <View style={styles.conteudo}>
+
+            <TouchableOpacity style={styles.buttonFechar} onPress={onClose}>
+                <Image
+                    source={require("../imagensModal/sair-da-tela-cheia.png")}
+                    style={{ width: 25, height: 25}}
+                />
+
+            </TouchableOpacity>
+
                 <Text style={styles.text}>NOME:</Text>
                 
                 <TextInput 
@@ -20,7 +30,7 @@ export function ModalFormCadastro({ onCadastrar, onClose }: Props) {
                     style={styles.input}
                 />
 
-                <TouchableOpacity onPress={() => onCadastrar(nome)}>
+                <TouchableOpacity style={styles.buttonConfirmar} onPress={() => onCadastrar(nome)}>
                     <Text style={styles.textButtonContinuar}>CONFIRMAR</Text>
                 </TouchableOpacity>
             </View>
@@ -75,5 +85,11 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 19.1,
         padding: 6,
+    },
+
+    buttonFechar: {
+        width: 35,
+        height: 35,   
+        marginLeft: "80%",
     }
 })
