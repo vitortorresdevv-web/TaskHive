@@ -270,7 +270,9 @@ export default function workSelected(){
             {nivelPermissao >=2 &&(
               <TouchableOpacity onPress={copiaCodigo}><Text style={styles.item}>Código Acesso</Text></TouchableOpacity>
             )}
-            <TouchableOpacity><Text style={styles.item}>Convidar</Text></TouchableOpacity>
+            {nivelPermissao >= 2 &&(
+              <TouchableOpacity><Text style={styles.item}>Convidar</Text></TouchableOpacity>
+            )}
             <TouchableOpacity onPress={sairDoTrabalho}><Text style={[styles.item, styles.sair]}>Sair do trabalho</Text></TouchableOpacity>
 
           </Animated.View>
