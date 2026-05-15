@@ -4,16 +4,16 @@ import { useLocalSearchParams } from "expo-router";
 import { getAuth } from "firebase/auth";
 import { arrayRemove, deleteField, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { db } from "../../configFireBase/firebaseConfig";
-
 import {
-    FlatList,
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  FlatList,
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
+import { db } from "../../configFireBase/firebaseConfig";
 
 export default function Integrantes() {
     const auth = getAuth();
@@ -25,6 +25,7 @@ export default function Integrantes() {
     const [selectedUser, setSelectedUser] = useState<any>(null);
     const [isCreator, setIsCreator] = useState(false);
     const [nivelPermissao, setNivelPermissao] = useState(0);
+    const [permissaoModal, setPermissaoModal] = useState(false)
 
     useEffect(() => {
         async function verificarCreator() {
@@ -70,14 +71,29 @@ export default function Integrantes() {
             console.log("Erro ao remover integrante:", error);
         }
     }
-    async function alterarPermissao(userId: string, nivel: number) {
-        await updateDoc(doc(db, "groups", String(groupId)), {
-            [`permissoes.${userId}`]: nivel
+    async function alterarPermissao(nivel: number) {
+
+      try {
+
+        if (!selectedUser?.id || !groupId) return;
+
+        const groupRef = doc(db, "groups", String(groupId));
+
+        await updateDoc(groupRef, {
+          [`permissoes.${selectedUser.id}`]: nivel
         });
 
-    }
+        setPermissaoModal(false);
 
-  return (
+      } catch (error) {
+
+        console.log("Erro ao alterar permissão:", error);
+
+      }
+
+    }
+  
+    return (
 
     <View style={styles.container}>
 
@@ -141,7 +157,7 @@ export default function Integrantes() {
                     </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.modalButton}>
+                <TouchableOpacity style={styles.modalButton} onPress={() => {setMenuVisible(false); setPermissaoModal(true)}}>
                     <Text style={styles.modalButtonText}>
                     Permissões
                     </Text>
@@ -156,6 +172,30 @@ export default function Integrantes() {
                 </TouchableOpacity>
             </View>
 
+        </View>
+      </Modal>
+
+      <Modal animationType="fade" transparent visible={permissaoModal}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <TouchableOpacity onPress={() => setPermissaoModal(false)} style={styles.buttonFecharModal}>
+              <Image style={styles.image} source={require("@/components/modal/imagensModal/sair-da-tela-cheia.png")}/>
+            </TouchableOpacity>
+
+            <Text style={styles.modalTitle}>Alterar Permissão</Text>
+
+            <TouchableOpacity style={styles.modalButton} onPress={() => alterarPermissao(3)}>
+              <Text style={styles.modalButtonText}>Nível 3</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.modalButton} onPress={() => alterarPermissao(2)}>
+              <Text style={styles.modalButtonText}>Nível 2</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.modalButton} onPress={() => alterarPermissao(1)}>
+              <Text style={styles.modalButtonText}>Nível 1</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     </View>
@@ -206,6 +246,11 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 
+  image: {
+    height: 30,
+    width: 30,
+  },
+
   modalTitle: {
     fontSize: 20,
     fontWeight: "bold",
@@ -233,5 +278,9 @@ cancelText: {
     color: "red",
     fontWeight: "bold",
 },
+
+buttonFecharModal: {
+  alignSelf: 'flex-end'
+}
 
 });
