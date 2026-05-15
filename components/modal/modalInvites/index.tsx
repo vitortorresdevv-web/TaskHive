@@ -1,23 +1,24 @@
 import { getAuth } from "firebase/auth";
 
 import {
-    arrayUnion,
-    collection,
-    doc,
-    onSnapshot,
-    query,
-    updateDoc,
-    where,
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  query,
+  updateDoc,
+  where
 } from "firebase/firestore";
 
 import { useEffect, useState } from "react";
 
 import {
-    FlatList,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 
 import { db } from "../../../app/(tabs)/src/configFireBase/firebaseConfig";
@@ -33,6 +34,7 @@ export default function InvitesModal({
 }: Props) {
 
   const auth = getAuth();
+  const user = auth.currentUser;
 
   const currentUser = auth.currentUser;
 
@@ -71,13 +73,25 @@ export default function InvitesModal({
   }, []);
 
   async function aceitarConvite(invite: any) {
-
     try {
+
+      if (!currentUser) return;
 
       const groupRef = doc(db, "groups", invite.groupId);
 
+      const groupSnap = await getDoc(groupRef);
+
+      if (!groupSnap.exists()) return;
+
+      const data = groupSnap.data();
+
       await updateDoc(groupRef, {
-        participantes: arrayUnion(currentUser?.uid),
+        participantes: arrayUnion(currentUser.uid),
+
+        permissoes: {
+          ...data.permissoes,
+          [currentUser.uid]: 1
+        }
       });
 
       const inviteRef = doc(db, "invites", invite.id);
