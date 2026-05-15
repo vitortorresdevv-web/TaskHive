@@ -190,6 +190,7 @@ export default function Index() {
                 params: {
                   groupId: item.id,
                   codigo: item.codigo,
+                  nomeGrupo: item.nome,
                 },
               })
             }
