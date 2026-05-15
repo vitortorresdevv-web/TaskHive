@@ -1,3 +1,4 @@
+import InviteUserModal from "@/components/modal/inviteUserModal";
 import { ModalConfirmarSaida } from "@/components/modal/modalConfirmarSaida";
 import { ModalLider } from "@/components/modal/modalEscolherNivel3";
 import * as Clipboard from "expo-clipboard";
@@ -6,13 +7,14 @@ import { getAuth } from "firebase/auth";
 import { arrayRemove, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { PieChart } from "react-native-chart-kit";
 import { db } from "../../configFireBase/firebaseConfig";
 
 export default function workSelected(){
 
     const [modalVisible, setModalVisible] = useState(false);
     const [modalVisibleLider, setModalVisibleLider] = useState(false);
-
+    const [inviteModalVisible, setInviteModalVisible] = useState(false);
     const [modalConfirmarSaida, setModalConfirmarSaida] = useState(false);
 
     async function sairDoTrabalho() {
@@ -67,7 +69,7 @@ export default function workSelected(){
     }
 
   const router = useRouter();
-  const { groupId } = useLocalSearchParams(); 
+  const { groupId, nomeGrupo } = useLocalSearchParams(); 
 
   const [menuAberto, setMenuAberto] = useState(false);
   const [group, setGroup] = useState<any>(null);
@@ -222,7 +224,16 @@ export default function workSelected(){
   return(
     <View style={{ flex: 1 }}>
 
+      <InviteUserModal
+        visible={inviteModalVisible}
+        onClose={() => setInviteModalVisible(false)}
+
+        groupId={String(groupId)}
+        groupName={String(nomeGrupo)}
+      />
+
       <View style={styles.container}>
+
 
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.push('/src/pages/home/home')}>
@@ -239,6 +250,35 @@ export default function workSelected(){
         </Text>
 
         <Text style={styles.text}>Progresso do Trabalho</Text>
+
+
+                  <PieChart
+  data={[
+    {
+      name: "Concluídas",
+      population: 8,
+      color: "#00bf63",
+      legendFontColor: "#091d34",
+      legendFontSize: 15,
+    },
+    {
+      name: "Pendentes",
+      population: 2,
+      color: "#cc0000",
+      legendFontColor: "#091d34",
+      legendFontSize: 15,
+    },
+  ]}
+  width={320}
+  height={220}
+  chartConfig={{
+    color: () => "#091d34",
+  }}
+  accessor={"population"}
+  backgroundColor={"transparent"}
+  paddingLeft={"15"}
+  absolute
+/>
 
           <TouchableOpacity style={styles.btn} onPress={() => router.push({
             pathname: "./tasks",
@@ -270,8 +310,9 @@ export default function workSelected(){
             {nivelPermissao >=2 &&(
               <TouchableOpacity onPress={copiaCodigo}><Text style={styles.item}>Código Acesso</Text></TouchableOpacity>
             )}
+
             {nivelPermissao >= 2 &&(
-              <TouchableOpacity><Text style={styles.item}>Convidar</Text></TouchableOpacity>
+              <TouchableOpacity onPress={() => setInviteModalVisible(true)}><Text style={styles.item}>Convidar</Text></TouchableOpacity>
             )}
             <TouchableOpacity onPress={sairDoTrabalho}><Text style={[styles.item, styles.sair]}>Sair do trabalho</Text></TouchableOpacity>
 
