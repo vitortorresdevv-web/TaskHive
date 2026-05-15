@@ -7,7 +7,6 @@ import { getAuth } from "firebase/auth";
 import { arrayRemove, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { PieChart } from "react-native-chart-kit";
 import { db } from "../../configFireBase/firebaseConfig";
 
 export default function workSelected(){
@@ -250,35 +249,6 @@ export default function workSelected(){
         </Text>
 
         <Text style={styles.text}>Progresso do Trabalho</Text>
-
-
-                  <PieChart
-  data={[
-    {
-      name: "Concluídas",
-      population: 8,
-      color: "#00bf63",
-      legendFontColor: "#091d34",
-      legendFontSize: 15,
-    },
-    {
-      name: "Pendentes",
-      population: 2,
-      color: "#cc0000",
-      legendFontColor: "#091d34",
-      legendFontSize: 15,
-    },
-  ]}
-  width={320}
-  height={220}
-  chartConfig={{
-    color: () => "#091d34",
-  }}
-  accessor={"population"}
-  backgroundColor={"transparent"}
-  paddingLeft={"15"}
-  absolute
-/>
 
           <TouchableOpacity style={styles.btn} onPress={() => router.push({
             pathname: "./tasks",
