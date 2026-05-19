@@ -22,6 +22,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -371,11 +372,25 @@ export default function workSelected() {
 
     const colors = [
       "#f99d30",
-      "#00bf63",
       "#132e48",
       "#ff6384",
-      "#36a2eb",
       "#ffce56",
+      "#8e44ad",
+      "#e74c3c",
+      "#16a085",
+      "#2ecc71",
+      "#d35400",
+      "#c0392b",
+      "#27ae60",
+      "#9b59b6",
+      "#292824",
+      "#34495e",
+      "#1abc9c",
+      "#e67e22",
+      "#7f8c8d",
+      "#2980b9",
+      "#6c3483",
+      "#145a32",
     ];
 
     let colorIndex = 0;
@@ -385,7 +400,11 @@ export default function workSelected() {
     for (const user in usersMap) {
 
       const percent =
-        (usersMap[user] / totalTasks) * 100;
+        Number(
+          (
+            (usersMap[user] / totalTasks) * 100
+          ).toFixed(1)
+        );
 
       chart.push({
 
@@ -405,7 +424,14 @@ export default function workSelected() {
     }
 
     const notDone =
-      100 - ((completedCount / totalTasks) * 100);
+      Number(
+        (
+          100 -
+          (
+            (completedCount / totalTasks) * 100
+          )
+        ).toFixed(1)
+      );
 
     chart.push({
 
@@ -474,18 +500,68 @@ export default function workSelected() {
           Progresso do Trabalho
         </Text>
 
-        <PieChart
-          data={chartData}
-          width={320}
-          height={220}
-          accessor={"population"}
-          backgroundColor={"transparent"}
-          paddingLeft={"15"}
-          absolute
-          chartConfig={{
-            color: () => "#091d34",
-          }}
-        />
+        <View style={styles.chartWrapper}>
+
+          <PieChart
+            data={chartData}
+            width={320}
+            height={320}
+            accessor={"population"}
+            backgroundColor={"transparent"}
+            paddingLeft={"80"}
+            hasLegend={false}
+            absolute
+            center={[0, 0]}
+            chartConfig={{
+              color: () => "#091d34",
+            }}
+          />
+
+          <View style={styles.legendWrapper}>
+
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.legendContainer}
+            >
+
+              {chartData.map((item, index) => (
+
+                <View
+                  key={index}
+                  style={styles.legendItem}
+                >
+
+                  <View
+                    style={[
+                      styles.colorBox,
+                      { backgroundColor: item.color }
+                    ]}
+                  />
+
+                  <View style={{ flex: 1 }}>
+
+                    <Text
+                      numberOfLines={1}
+                      style={styles.legendName}
+                    >
+                      {item.name}
+                    </Text>
+
+                    <Text style={styles.legendPercent}>
+                      {item.population}%
+                    </Text>
+
+                  </View>
+
+                </View>
+
+              ))}
+
+            </ScrollView>
+
+          </View>
+
+        </View>
 
         <TouchableOpacity
           style={styles.btn}
@@ -530,12 +606,40 @@ export default function workSelected() {
 
             </TouchableOpacity>
 
-            {nivelPermissao >= 1 &&(
-              <TouchableOpacity onPress={() => router.push({pathname: '/(tabs)/src/pages/chat', params: { groupId }})}><Text style={styles.item}>Chat</Text></TouchableOpacity>
+            {nivelPermissao >= 1 && (
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: '/(tabs)/src/pages/chat',
+                    params: { groupId }
+                  })
+                }
+              >
+                <Text style={styles.item}>
+                  Chat
+                </Text>
+              </TouchableOpacity>
             )}
-            <TouchableOpacity onPress={() => router.push({ pathname: '/(tabs)/src/pages/integrantes',params: { groupId }})}><Text style={styles.item}>Integrantes</Text></TouchableOpacity>
-            {nivelPermissao >=2 &&(
-              <TouchableOpacity onPress={copiaCodigo}><Text style={styles.item}>Código Acesso</Text></TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: '/(tabs)/src/pages/integrantes',
+                  params: { groupId }
+                })
+              }
+            >
+              <Text style={styles.item}>
+                Integrantes
+              </Text>
+            </TouchableOpacity>
+
+            {nivelPermissao >= 2 && (
+              <TouchableOpacity onPress={copiaCodigo}>
+                <Text style={styles.item}>
+                  Código Acesso
+                </Text>
+              </TouchableOpacity>
             )}
 
             {nivelPermissao >= 2 && (
@@ -600,19 +704,21 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#44abe8',
   },
 
   btn: {
+    position: "absolute",
+    bottom: 30,
+    alignSelf: "center",
     backgroundColor: '#f99d30',
     borderRadius: 20,
     width: '90%',
-    marginTop: 50,
     height: 60,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    elevation: 8,
   },
 
   buttonText: {
@@ -626,12 +732,14 @@ const styles = StyleSheet.create({
     fontSize: 23,
     marginBottom: 60,
     marginTop: 10,
+    textAlign: "center",
   },
 
   text: {
     fontWeight: 'bold',
     fontSize: 23,
-    marginBottom: 20,
+    marginBottom: 25,
+    textAlign: "center",
   },
 
   header: {
@@ -691,5 +799,54 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 22,
     fontWeight: 'bold',
+  },
+
+  chartWrapper: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  legendWrapper: {
+    width: "95%",
+    maxHeight: 180,
+    marginTop: 5,
+  },
+
+  legendContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    paddingBottom: 20,
+  },
+
+  legendItem: {
+    width: "48%",
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.2)",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 14,
+    marginBottom: 12,
+    marginHorizontal: "1%",
+  },
+
+  colorBox: {
+    width: 14,
+    height: 14,
+    borderRadius: 4,
+    marginRight: 8,
+  },
+
+  legendName: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#091d34",
+  },
+
+  legendPercent: {
+    fontSize: 12,
+    color: "#333",
   },
 });
