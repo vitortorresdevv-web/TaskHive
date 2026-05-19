@@ -274,9 +274,9 @@ export default function workSelected(){
             </TouchableOpacity>
 
             {nivelPermissao >= 1 &&(
-              <TouchableOpacity><Text style={styles.item}>Chat</Text></TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push({pathname: '/(tabs)/src/pages/chat', params: { groupId }})}><Text style={styles.item}>Chat</Text></TouchableOpacity>
             )}
-            <TouchableOpacity onPress={() => router.push({ pathname: '/(tabs)/src/pages/integrantes',params: { groupId },})}><Text style={styles.item}>Integrantes</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push({ pathname: '/(tabs)/src/pages/integrantes',params: { groupId }})}><Text style={styles.item}>Integrantes</Text></TouchableOpacity>
             {nivelPermissao >=2 &&(
               <TouchableOpacity onPress={copiaCodigo}><Text style={styles.item}>Código Acesso</Text></TouchableOpacity>
             )}
