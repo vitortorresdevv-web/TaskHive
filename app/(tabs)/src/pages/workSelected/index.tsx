@@ -376,21 +376,19 @@ export default function workSelected() {
       "#ff6384",
       "#ffce56",
       "#8e44ad",
-      "#e74c3c",
       "#16a085",
-      "#2ecc71",
-      "#d35400",
       "#c0392b",
       "#27ae60",
-      "#9b59b6",
       "#292824",
       "#34495e",
       "#1abc9c",
       "#e67e22",
       "#7f8c8d",
       "#2980b9",
+      "#e74c3c",
       "#6c3483",
       "#145a32",
+      "#d35400",
     ];
 
     let colorIndex = 0;
